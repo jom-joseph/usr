@@ -1,0 +1,41 @@
+sudo apt update
+sudo apt install -y binwalk file binutils xxd
+
+mkdir -p ~/firmware-lab
+cd ~/firmware-lab
+
+printf 'IOT-FIRMWARE\nDevice: ESP32\nVersion: 1.0\nConfig: /etc/device.conf\n' > firmware.bin
+file firmware.bin
+
+sha256sum firmware.bin
+
+strings -n 6 firmware.bin | head -n 50
+
+binwalk firmware.bin
+binwalk -e firmware.bin
+find _firmware.bin.extracted -maxdepth 3 -type f 2>/dev/null | head -n 50
+find _firmware.bin.extracted -type f -exec file {} \; 2>/dev/null | head -n 30
+
+
+
+###################################OR
+
+sudo apt update
+sudo apt install -y binwalk file binutils xxd
+
+mkdir -p ~/firmware-lab
+cd ~/firmware-lab
+wget -O firmware.img.gz https://downloads.openwrt.org/releases/25.12.4/targets/x86/64/openwrt-25.12.4-x86-64-generic-squashfs-rootfs.img.gz
+
+sha256sum firmware.img.gz
+
+gzip -dk firmware.img.gz
+mv firmware.img firmware.bin
+
+file firmware.bin
+sha256sum firmware.bin
+strings -n 6 firmware.bin | head -n 50
+binwalk firmware.bin
+binwalk -e firmware.bin
+find _firmware.bin.extracted -maxdepth 3 -type f | head -n 50
+find _firmware.bin.extracted -type f -exec file {} \; | head -n 30
